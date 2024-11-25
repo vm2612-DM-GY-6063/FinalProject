@@ -17,6 +17,7 @@
             ^                                                         |
             |                                                         v
      Mouse Position                                             RGB LED Output
+```latex
 
 ### p5.js:
 - **Input**: Mouse position (X, Y) on the canvas.
