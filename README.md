@@ -1,4 +1,6 @@
 
+```latex
+
 # Idea 1
 
 ## Project Idea: RGB LED Color Controller
@@ -17,7 +19,7 @@
             ^                                                         |
             |                                                         v
      Mouse Position                                             RGB LED Output
-```latex
+
 
 ### p5.js:
 - **Input**: Mouse position (X, Y) on the canvas.
