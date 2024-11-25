@@ -6,19 +6,17 @@
 **Description**: This project involves controlling an RGB LED's color using the mouse position on a canvas displayed by p5.js. The mouse's X and Y positions are mapped to RGB values, which are then sent to the Arduino via serial communication. The Arduino receives these values and adjusts the brightness of the LED's red, green, and blue components using PWM. This creates a seamless interaction between the virtual and physical systems, where the LED replicates the color displayed on the screen in real-time.
 
 ### Diagram
-```latex
-\begin{tikzpicture}[node distance=2cm, auto]
-    % Nodes
-    \node[draw, rectangle, text width=5cm, align=center] (p5js) {Laptop (p5.js)\\ - Mouse input\\ - Display canvas\\ - Map RGB values};
-    \node[draw, rectangle, text width=5cm, align=center, right of=p5js, xshift=5cm] (arduino) {Arduino\\ - RGB LED control\\ - PWM for LEDs};
-    \node[below of=arduino, yshift=-1cm] (led) {RGB LED Output};
-    \node[above of=p5js, yshift=1cm] (mouse) {Mouse Position};
 
-    % Connections
-    \draw[<->] (p5js) -- node[align=center] {Serial Communication} (arduino);
-    \draw[->] (mouse) -- (p5js);
-    \draw[->] (arduino) -- (led);
-\end{tikzpicture}
+
+ +--------------------+       Serial Communication       +--------------------+
+ |     Laptop (p5.js) | -------------------------------->|      Arduino       |
+ |   - Mouse input     |                                 |   - RGB LED control|
+ |   - Display canvas  |                                 |   - PWM for LEDs   |
+ |   - Map RGB values  |                                 |                    |
+ +--------------------+                                 +--------------------+
+            ^                                                         |
+            |                                                         v
+     Mouse Position                                             RGB LED Output
 
 ### p5.js:
 - **Input**: Mouse position (X, Y) on the canvas.
