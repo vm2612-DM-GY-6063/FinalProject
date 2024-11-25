@@ -96,3 +96,7 @@ Diagram 3
             |
             v
      Adjust LED Output
+
+
+
+Utilised chatgpt to gather ideas
