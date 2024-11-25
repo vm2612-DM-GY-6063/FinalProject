@@ -5,7 +5,7 @@
 
 ## Project Idea: RGB LED Color Controller
 
-**Description**: This project involves controlling an RGB LED's color using the mouse position on a canvas displayed by p5.js. The mouse's X and Y positions are mapped to RGB values, which are then sent to the Arduino via serial communication. The Arduino receives these values and adjusts the brightness of the LED's red, green, and blue components using PWM. This creates a seamless interaction between the virtual and physical systems, where the LED replicates the color displayed on the screen in real-time.
+**Description**: This project involves controlling an RGB LED's color using the mouse position on a canvas displayed by p5.js. The mouse's X and Y positions are mapped to RGB values, which are then sent to the Arduino via serial communication. The Arduino receives these values and adjusts the brightness of the LED's red, green, and blue components using PWM. The LED replicates the color displayed on the screen in real-time.
 
 ### p5.js:
 - **Input**: Mouse position (X, Y) on the canvas.
