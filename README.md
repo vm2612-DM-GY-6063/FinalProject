@@ -54,18 +54,19 @@
 
 Diagram 1
 
- +--------------------+       Serial Communication       +--------------------+
- |     Laptop (p5.js) | -------------------------------->|      Arduino       |
- |   - Mouse input     |                                 |   - RGB LED control|
- |   - Display canvas  |                                 |   - PWM for LEDs   |
- |   - Map RGB values  |                                 |                    |
- +--------------------+                                  +--------------------+
+
+ +---------------------+       Serial Communication       +--------------------+
+ |     Laptop (p5.js)  | -------------------------------->|      Arduino       |
+ |   - Mouse input     |                                  |   - RGB LED control|
+ |   - Display canvas  |                                  |   - PWM for LEDs   |
+ |   - Map RGB values  |                                  |                    |
+ +---------------------+                                  +--------------------+
             ^                                                         |
             |                                                         v
      Mouse Position                                             RGB LED Output
 
-Diagram 2
 
+Diagram 2
 
  +--------------------+       Serial Communication       +----------------------+
  |      Arduino       | -------------------------------->|     Laptop (p5.js)   |
@@ -80,10 +81,8 @@ Diagram 2
             v
      LEDs Light Up
 
+
 Diagram 3
-
-### Diagram
-
 
  +--------------------+       Serial Communication       +---------------------+
  |      Arduino       | -------------------------------->|     Laptop (p5.js)  |
@@ -93,7 +92,7 @@ Diagram 3
  +--------------------+                                  +---------------------+
             ^                                                         |
             |                                                         v
-   Distance of Hand                                            Dynamic Visualization
+     Distance of Hand                                       Dynamic Visualization
             |
             v
      Adjust LED Output
