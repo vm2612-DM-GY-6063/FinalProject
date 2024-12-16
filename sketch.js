@@ -1,66 +1,204 @@
-let serial; // Serial object
-let distance = 0; // Distance data from Arduino
+let mSerial;
+let connectButton;
+let readyToReceive = false;
+let isGameStarted = false;
+
+let dinosaur; // Dinosaur object
+let cactus; // Cactus object
+let groundY; // Ground level
+let distance = 0; // Ultrasonic distance
+let score = 0; // Game score
+let isGameOver = false;
+let restartButton; // Restart button
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  
+
+  // Ground level
+  groundY = height - 50;
+
+  // Dinosaur properties
+  dinosaur = {
+    x: 50,
+    y: groundY,
+    size: 50,
+    vy: 0, // Vertical velocity
+    gravity: 1.5,
+    jumpStrength: -25, // Further increased jump strength
+    isJumping: false,
+  };
+
+  // Cactus properties
+  cactus = {
+    x: width,
+    y: groundY - 25,
+    size: 50,
+    speed: 6,
+  };
+
   // Setup serial communication
-  serial = new p5.SerialPort();
-  serial.open("COM3"); // Replace with your port
-  serial.on("data", serialEvent);
+  mSerial = createSerial();
+  connectButton = createButton("Connect to Serial");
+  connectButton.position(width / 2 - 50, height / 2);
+  connectButton.mousePressed(connectToSerial);
+
+  // Create restart button but hide it initially
+  restartButton = createButton("Restart");
+  restartButton.position(width / 2 - 50, height / 2 + 100);
+  restartButton.mousePressed(restartGame);
+  restartButton.hide();
 }
 
 function draw() {
-  background(0);
+  background(200);
 
-  // Map distance to visual parameters
-  let size = map(distance, 5, 100, 10, width);
-  let brightness = map(distance, 5, 100, 255, 50);
-  let colorValue = map(distance, 5, 100, 0, 255);
+  if (!isGameStarted) {
+    displayStartScreen();
+    return;
+  }
 
-  // Draw expanding/shrinking circle
-  noStroke();
-  fill(colorValue, 100, 255 - colorValue, brightness);
-  ellipse(width / 2, height / 2, size, size);
+  if (isGameOver) {
+    displayGameOver();
+    return;
+  }
 
-  // Draw dynamic bar graph
-  drawBars(distance);
+  // Draw ground
+  fill(100);
+  rect(0, groundY, width, 50);
 
-  // Draw wave pattern
-  drawWaves(distance);
+  // Handle dinosaur jumping
+  handleDinosaur();
+
+  // Move and draw cactus
+  handleCactus();
+
+  // Display score
+  displayScore();
+
+  // Handle serial communication
+  if (mSerial.opened() && readyToReceive) {
+    mSerial.write(0xAB); // Request data
+    readyToReceive = false;
+  }
+  if (mSerial.availableBytes() > 0) {
+    receiveSerial();
+  }
+
+  // Check for collision
+  checkCollision();
 }
 
-function drawBars(distance) {
-  let barHeight = map(distance, 5, 100, height / 2, 10);
-  let numBars = 10;
-  let barWidth = width / numBars;
+function handleDinosaur() {
+  // Apply gravity
+  dinosaur.vy += dinosaur.gravity;
+  dinosaur.y += dinosaur.vy;
 
-  for (let i = 0; i < numBars; i++) {
-    let barColor = map(i, 0, numBars, 50, 255);
-    fill(barColor, 150, 255 - barColor);
-    rect(i * barWidth, height - barHeight, barWidth - 5, barHeight);
+  // Prevent falling below ground
+  if (dinosaur.y > groundY) {
+    dinosaur.y = groundY;
+    dinosaur.isJumping = false;
+  }
+
+  // Draw dinosaur
+  fill(0, 255, 0);
+  rect(dinosaur.x, dinosaur.y - dinosaur.size, dinosaur.size, dinosaur.size);
+
+  // Trigger jump if distance is within a certain range
+  if (distance < 20 && !dinosaur.isJumping) {
+    dinosaur.vy = dinosaur.jumpStrength;
+    dinosaur.isJumping = true;
   }
 }
 
-function drawWaves(distance) {
-  stroke(255, 200, 100);
-  strokeWeight(2);
-  noFill();
+function handleCactus() {
+  cactus.x -= cactus.speed;
 
-  let waveHeight = map(distance, 5, 100, 50, 10);
-  let waveFrequency = map(distance, 5, 100, 0.1, 1);
-
-  beginShape();
-  for (let x = 0; x < width; x += 10) {
-    let y = height / 2 + sin(x * waveFrequency + frameCount * 0.1) * waveHeight;
-    vertex(x, y);
+  // Reset cactus position when it goes off screen
+  if (cactus.x < -cactus.size) {
+    cactus.x = width;
+    score++;
   }
-  endShape();
+
+  // Draw cactus
+  fill(255, 0, 0);
+  rect(cactus.x, cactus.y - cactus.size, cactus.size, cactus.size);
 }
 
-function serialEvent() {
-  let data = serial.readLine(); // Read incoming serial data
-  if (data.length > 0) {
-    distance = int(data); // Parse distance data
+function displayScore() {
+  textSize(32);
+  fill(0);
+  textAlign(LEFT, TOP);
+  text(`Score: ${score}`, 10, 10);
+}
+
+function checkCollision() {
+  if (
+    dinosaur.x + dinosaur.size > cactus.x &&
+    dinosaur.x < cactus.x + cactus.size &&
+    dinosaur.y > cactus.y - cactus.size
+  ) {
+    isGameOver = true;
+    restartButton.show(); // Show restart button on game over
   }
+}
+
+function displayGameOver() {
+  textSize(64);
+  fill(0);
+  textAlign(CENTER, CENTER);
+  text("Game Over", width / 2, height / 2);
+  textSize(32);
+  text(`Score: ${score}`, width / 2, height / 2 + 50);
+}
+
+function displayStartScreen() {
+  textSize(64);
+  fill(0);
+  textAlign(CENTER, CENTER);
+  text("Connect to Start Game", width / 2, height / 2);
+}
+
+function connectToSerial() {
+  if (!mSerial.opened()) {
+    mSerial.open(9600);
+    connectButton.hide();
+    readyToReceive = true;
+    isGameStarted = true; // Start the game after connection
+  }
+}
+
+function receiveSerial() {
+  let line = mSerial.readUntil("\n").trim();
+  if (!line) return;
+
+  try {
+    if (!line.startsWith("{")) {
+      console.error("Invalid JSON format:", line);
+      readyToReceive = true;
+      return;
+    }
+
+    let data = JSON.parse(line).data;
+
+    // Read ultrasonic distance
+    distance = data?.Ultrasonic?.distance_cm ?? 0;
+
+    // Log the distance value for debugging
+    console.log(`Distance: ${distance} cm`);
+  } catch (error) {
+    console.error("JSON Parsing Error:", error);
+    console.error("Raw Data:", line);
+  }
+
+  readyToReceive = true;
+}
+
+function restartGame() {
+  score = 0;
+  isGameOver = false;
+  cactus.x = width;
+  dinosaur.y = groundY;
+  dinosaur.vy = 0;
+  restartButton.hide(); // Hide the restart button
+  loop();
 }
