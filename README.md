@@ -1,3 +1,89 @@
+# Dinosaur Jump Game Using Ultrasonic Sensor and Serial Communication
+
+This project is an interactive Dinosaur Jump Game built using **p5.js** and **Arduino**. The dinosaur's jump is controlled using an ultrasonic sensor, and obstacles (cacti) move across the screen, making the game dynamic and fun to play.
+
+---
+
+## Features
+
+### Dinosaur Jump Control
+- The dinosaur jumps when the ultrasonic sensor detects a distance less than **10 cm**.
+
+### Dynamic Obstacles
+- Obstacles (cacti) move left across the screen and reset to randomized positions spaced apart after going off-screen.
+
+### Score Tracking
+- The score increases each time an obstacle resets its position.
+
+### Game Over and Restart
+- If the dinosaur collides with an obstacle, the game ends. A restart button is shown to replay the game.
+
+### Start Game on Connection
+- The game starts only after connecting to the Arduino via serial communication.
+
+---
+
+## Requirements
+
+### Hardware
+- **Arduino Board**
+- **Ultrasonic Sensor** (e.g., HC-SR04)
+- **Connecting Wires**
+- **USB Cable** for serial communication
+
+### Software
+- **Arduino IDE**
+- **p5.js Library**
+- A **Web Browser** to run the game
+
+---
+
+## How It Works
+
+### Arduino Code
+The ultrasonic sensor sends distance readings to the p5.js sketch over serial communication in **JSON** format:
+
+```json
+{
+  "data": {
+    "Ultrasonic": {
+      "distance_cm": 8
+    }
+  }
+}
+```
+
+- The ultrasonic sensor measures the distance to an object.
+- If the distance is less than **10 cm**, the dinosaur jumps.
+
+### p5.js Game Logic
+- The dinosaur moves vertically based on the sensor input.
+- Obstacles (cacti) move from right to left and reset at random positions spaced between **300px to 500px** apart.
+- **Collision detection** ends the game and displays a Restart button.
+
+---
+
+## Instructions to Run the Game
+
+### 1. Upload the Arduino Code
+- Use the **Arduino IDE** to upload the code that sends ultrasonic sensor data as JSON.
+
+### 2. Connect the Arduino
+- Start the game by connecting to the Arduino via serial communication.
+
+### 3. Run the p5.js Sketch
+- Use the **p5.js editor** or a **local server** to run the game.
+
+### 4. Play the Game
+- Move your hand near the ultrasonic sensor to make the dinosaur jump.
+- Avoid colliding with the moving obstacles.
+
+---
+
+## Game Controls
+- **Jump**: Move your hand closer to the ultrasonic sensor.
+- **Restart**: Click the **Restart** button when the game is over.
+
 # Proximity-Based LED Visualizer
 
 ## High-Level System Diagram
